@@ -1,127 +1,43 @@
-{
-  "intents": [
-    {
-      "tag": "greeting",
-      "patterns": [
-        "Hi",
-        "Hey",
-        "How are you",
-        "Hello",
-        "Good day"
-      ],
-      "responses": [
-        "Hey User",
-        "Hello, thanks for visiting",
-        "Hello there, what can I do for you?",
-        "Hello there, how can I help?",
-        "Hi, what can I do for you?",
-      ]
-    },
-    {
-      "tag": "goodbye",
-      "patterns": ["Bye", "Until Next Time", "Goodbye", "In a bit"],
-      "responses": [
-        "See you later",
-        "Have a nice day",
-        "Bye.", "Catch you later!",
-    "Goodbye!",
-    "Toodles!",
-    "Bye-bye!"
-      ]
-    },
-    {
-      "tag": "thanks",
-      "patterns": ["Thanks","That helped","I appreciate it" ,"Thank you","Many thanks",
-                    "That's helpful", "Much obliged","Thank's a lot!","Cheers"],
-      "responses": ["Happy to help!","I'm so glad it was helpful","It's an honor!", "Any time!",
-                    "You're most welcome", "My pleasure"]
-    },
-    {
-      "tag": "items",
-      "patterns": [
-        "Which items do you have?",
-        "What items do you have?",
-        "What kinds of items are there?",
-        "What do you sell?"
-      ],
-      "responses": [
-        "We sell iphones, ipads and macbook",
-        "We have iphones, ipads and macbook",
-      ]
-    },
-    {
-      "tag": "payments",
-      "patterns": [
-        "Do you take credit cards?",
-        "Do you take a Apple Pay?",
-        "Do you take cash?",
-        "Do you accept Mastercard?",
-        "Can I pay with Paypal?",
-        "Are you cash only?"
-      ],
-      "responses": [
-        "We accept Mastercard and Paypal",
-        "We accept most major credit cards, and Paypal",
-        "We take cash in person"
-      ]
-    },
-    {
-      "tag": "tech_tips",
-      "patterns": [
-        "Give me tech help please?",
-        "Can you provide some tech advice?",
-        "I need some tech help."
-      ],
-      "responses": [
-        "Sure! Remember to regularly update your software and operating system to ensure security and performance improvements.",
-        "Backup your important files regularly to prevent data loss",
-        "Keep your devices clean from dust and debris",
-        "When troubleshooting tech problems, try restarting your device",
-        "Use strong and unique passwords for all your accounts to enhance security",
+import numpy as np
+import nltk
+# nltk.download('punkt')
+from nltk.stem.porter import PorterStemmer
+stemmer = PorterStemmer()
 
-      ]
-    },
-    {
-      "tag": "delivery",
-      "patterns": [
-        "How long does delivery take?",
-        "How long does shipping take?",
-        "When do I get my delivery?"
-      ],
-      "responses": [
-        "Delivery takes 2-12 days",
-        "Shipping takes 2-12 days"
-      ]
-    },
-    {
-      "tag": "pricing",
-      "patterns": [
-        "What are your pricing options?",
-        "Can you tell me about your product's pricing?",
-        "How much does your product cost?"
-      ],
-      "responses": [
-        "Our pricing varies based on features and plans. Visit our website",
-        "We update pricing regularly. Visit our site or contact sales for info"
-      ]
-    },  
-    
-    
-    {
-      "tag": "funny",
-      "patterns": [
-        "Tell me a joke!",
-        "Tell me something funny!",
-        "Do you know a joke?"
-      ],
-      "responses": [
-        "Why was the computer cold? It left its Windows open.",
-    "Why don't programmers like nature? It has too many bugs.",
-    "Why was the math book sad? It had too many problems.",
-    "Why did the smartphone go to therapy? It had too many apps-issues.",
-    "Why did the robot go on a diet? It had too many bytes.",
-    "Why was the cell phone so smart? It went to mobile school."
-      ]
-    }
-  ]
-}
+def tokenize(sentence):
+    """
+    split sentence into array of words/tokens
+    a token can be a word or punctuation character, or number
+    """
+    return nltk.word_tokenize(sentence)
+
+
+def stem(word):
+    """
+    stemming = find the root form of the word
+    examples:
+    words = ["organize", "organizes", "organizing"]
+    words = [stem(w) for w in words]
+    -> ["organ", "organ", "organ"]
+    """
+    return stemmer.stem(word.lower())
+
+
+def bag_of_words(tokenized_sentence, words):
+    """
+    return bag of words array:
+    1 for each known word that exists in the sentence, 0 otherwise
+    example:
+    sentence = ["hello", "how", "are", "you"]
+    words = ["hi", "hello", "I", "you", "bye", "thank", "cool"]
+    bog   = [  0 ,    1 ,    0 ,   1 ,    0 ,    0 ,      0]
+    """
+    # stem each word
+    sentence_words = [stem(word) for word in tokenized_sentence]
+    # initialize bag with 0 for each word
+    bag = np.zeros(len(words), dtype=np.float32)
+    for idx, w in enumerate(words):
+        if w in sentence_words: 
+            bag[idx] = 1
+
+    return bag
